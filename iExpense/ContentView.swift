@@ -38,15 +38,45 @@ struct ContentView: View {
 //    @State private var showingSheet = false
 //    @State private var numbers = [Int]()
 //    @State private var currentNumber = 1
+    @StateObject var expenses = Expenses()
+    @State private var showingAddExpense = false
     
     var body: some View {
-       Button("Save user") {
+        NavigationView {
+            List {
+                ForEach(expenses.items) { item in
+                    HStack {
+                        VStack(alignment: .leading){
+                            Text(item.name)
+                                .font(.headline)
+                                .fontWeight(.bold)
+                            Text(item.type)
+                        }
+                        
+                        Spacer()
+                        
+                        Text(item.amount, format: .currency(code: "USD"))
+                    }
+                }
+                .onDelete(perform: removeItems)
+            }
+            .navigationTitle("iExpenses")
+            .toolbar {
+                Button {
+                    showingAddExpense = true
+                } label : {
+                    Image(systemName: "plus")
+                }
+            }
+            .sheet(isPresented: $showingAddExpense) {
+                AddView(expenses: expenses)
+            }
+        }
 //            let encoder = JSONEncoder()
 //
 //            if let data = try? encoder.encode(user) {
 //                UserDefaults.standard.set(data, forKey: "UserData")
 //            }
-        }
         
 //        Button("Tap Count: \(tapCount)") {
 //            tapCount += 1
@@ -89,9 +119,10 @@ struct ContentView: View {
         
         
     }
-//    func removeRows(at offsets: IndexSet) {
-//        numbers.remove(atOffsets: offsets)
-//    }
+
+    func removeItems(at offsets: IndexSet) {
+        expenses.items.remove(atOffsets: offsets)
+    }
     
     
     
