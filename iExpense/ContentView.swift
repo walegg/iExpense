@@ -31,34 +31,76 @@ import SwiftUI
 //}
 
 struct ContentView: View {
-//    @State private var user = User(firstName: "Taylor", lastName: "Swift")
-//    @AppStorage("tapCount") private var tapCount = 0
-//    @State private var tapCount = UserDefaults.standard.integer(forKey: "Tap")
-//    @StateObject var user = User()
-//    @State private var showingSheet = false
-//    @State private var numbers = [Int]()
-//    @State private var currentNumber = 1
     @StateObject var expenses = Expenses()
     @State private var showingAddExpense = false
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(expenses.items) { item in
-                    HStack {
-                        VStack(alignment: .leading){
-                            Text(item.name)
-                                .font(.headline)
-                                .fontWeight(.bold)
-                            Text(item.type)
+                Section {
+                    ForEach(expenses.items.filter { $0.type == "Personal"}) { item in
+                        HStack {
+                            VStack(alignment: .leading){
+                                Text(item.name)
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                Text(item.type)
+                            }
+                            
+                            if item.type == "Personal" {
+                                if item.amount < 10 {
+                                    Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                        .foregroundColor(.green)
+                                } else if item.amount < 100 {
+                                    Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                        .foregroundColor(.orange)
+                                } else if item.amount > 100 {
+                                    Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                        .foregroundColor(.red)
+                                }
+                            }
+                            
+                            Spacer()
+                            
                         }
-                        
-                        Spacer()
-                        
-                        Text(item.amount, format: .currency(code: "USD"))
                     }
+                    .onDelete(perform: removeItems)
+                } header: {
+                    Text("Personal expenses")
                 }
-                .onDelete(perform: removeItems)
+                
+                
+                Section {
+                    ForEach(expenses.items.filter { $0.type == "Business"}) { item in
+                        HStack {
+                            VStack(alignment: .leading){
+                                Text(item.name)
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                Text(item.type)
+                            }
+                            
+                            if item.type == "Business" {
+                                if item.amount < 10 {
+                                    Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                        .foregroundColor(.green)
+                                } else if item.amount < 100 {
+                                    Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                        .foregroundColor(.orange)
+                                } else if item.amount > 100 {
+                                    Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                        .foregroundColor(.red)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                        }
+                    }
+                    .onDelete(perform: removeItems)
+                } header: {
+                    Text("Business expenses")
+                }
             }
             .navigationTitle("iExpenses")
             .toolbar {
@@ -71,63 +113,16 @@ struct ContentView: View {
             .sheet(isPresented: $showingAddExpense) {
                 AddView(expenses: expenses)
             }
+            
         }
-//            let encoder = JSONEncoder()
-//
-//            if let data = try? encoder.encode(user) {
-//                UserDefaults.standard.set(data, forKey: "UserData")
-//            }
-        
-//        Button("Tap Count: \(tapCount)") {
-//            tapCount += 1
-//            UserDefaults.standard.set(tapCount, forKey: "Tap")
-//        }
-        
-//        NavigationView {
-//            VStack {
-//                List {
-//                    ForEach(numbers, id: \.self) {
-//                        Text("Row \($0)")
-//                    }
-//                    .onDelete(perform: removeRows)
-//                }
-//
-//                Button("Add number") {
-//                    numbers.append(currentNumber)
-//                    currentNumber += 1
-//                }
-//            }
-//            .navigationTitle("onDelete()")
-//            .toolbar {
-//                EditButton()
-//            }
-//        }
-//        Button("Show Sheet") {
-//            showingSheet.toggle()
-//        }
-//        .sheet(isPresented: $showingSheet) {
-//            SecondView(name: "Louis")
-//        }
-//        VStack {
-//            Text("Your name is \(user.firstName) \(user.lastName)")
-//
-//            TextField("First Name", text: $user.firstName)
-//            TextField("Last Name", text: $user.lastName)
-//
-//        }
-//        .padding()
-        
-        
     }
-
+    
     func removeItems(at offsets: IndexSet) {
         expenses.items.remove(atOffsets: offsets)
     }
     
-    
-    
-    
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
